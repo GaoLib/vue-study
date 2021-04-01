@@ -4,13 +4,33 @@ class VueRouter {
     // 保存选项
     this.$options = options
     const initial = window.location.hash.substring(1) || "/"
-    // 定义一个响应式数据
-    Vue.util.defineReactive(this, 'current', initial)
+    // 定义一个响应式数据  无嵌套路由时
+    // Vue.util.defineReactive(this, 'current', initial)
+    Vue.util.defineReactive(this, 'matches', [])
     this.current = initial
+    this.matchRoutes()
 
     window.addEventListener('hashchange', () => {
       this.current = window.location.hash.substring(1)
+      this.matches = []
+      this.matchRoutes()
     })
+  }
+
+  matchRoutes(routes) {
+    const curRoutes = routes || this.$options.routes
+    for (const route of curRoutes) {
+      if (route.path === '/' && this.current === '/') {
+        this.matches.push(route)
+        return
+      }
+      // /about/child 当前地址包含 /about, /child
+      if (route.path !== '/' && this.current.indexOf(route.path) !== -1) {
+        this.matches.push(route)
+        if (route.children) this.matchRoutes(route.children)
+        return
+      }
+    }
   }
 }
 
@@ -30,8 +50,25 @@ VueRouter.install = (_Vue) => {
   // 实现router-view组件
   Vue.component('router-view', {
     render(h) {
-      const current = this.$router.current
-      const comp = this.$router.$options.routes.find(comp => comp.path === current).component || null
+      // 无嵌套路由时
+      // const current = this.$router.current
+      // const comp = this.$router.$options.routes.find(comp => comp.path === current).component || null
+
+      // 标记当前router-view深度m
+      this.$vnode.data.routerView = true
+      let depth = 0
+      let parent = this.$parent
+
+      while(parent) {
+        const vnodeDate = parent.$vnode && parent.$vnode.data
+        if (vnodeDate) {
+          vnodeDate.routerView && depth++
+        }
+        parent = parent.$parent
+      }
+      // 找到 matches 数组中的组件
+      const route = this.$router.matches[depth]
+      const comp = route && route.component || null
       return h(comp)
     }
   })
@@ -47,14 +84,27 @@ VueRouter.install = (_Vue) => {
       },
     },
     render(h) {
-      return h('a', {
-        attrs: {
-          href: `#${this.to}`,
-        },
-        style: {
-          textDecoration: 'none',
-        }
-      }, this.$slots.default)
+      let component = this.$router.$options.mode === 'hash'
+        ? h('a', {
+          attrs: {
+            href: `#${this.to}`,
+          },
+          style: {
+            textDecoration: 'none',
+          }
+        }, this.$slots.default)
+        : h('span', {
+          style: {
+            cursor: 'pointer',
+          },
+          on: {
+            click: () => {
+              history.pushState({}, '', this.to)
+              this.$router.current = this.to
+            }
+          }
+        }, this.$slots.default)
+      return component
     }
   })
 }

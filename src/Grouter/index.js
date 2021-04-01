@@ -18,12 +18,23 @@ const routes = [
     path: '/about',
     name: 'About',
     component: () => import('../views/About.vue'),
+    children: [
+      {
+        path: '/about/child',
+        name: 'Child',
+        component: {
+          render(h) {
+            return h('div', 'Child')
+          }
+        }
+      }
+    ]
   }
 ]
 
 // 2.创建实例
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 })
