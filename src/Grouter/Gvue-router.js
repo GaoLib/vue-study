@@ -1,3 +1,17 @@
+// 监听pushState及replaceState
+const _wrapper = type => {
+  const origin = history[type]
+  return function() {
+    const event = new Event(type)
+    event.arguments = arguments
+    window.dispatchEvent(event)
+    return origin.apply(this, arguments)
+  }
+}
+
+history.pushState = _wrapper('pushState')
+history.replaceState = _wrapper('replaceState')
+
 let Vue
 class VueRouter {
   constructor(options) {
@@ -5,6 +19,7 @@ class VueRouter {
     this.$options = options
     const initial = window.location.hash.substring(1) || "/"
     // 定义一个响应式数据  无嵌套路由时
+    // 不可以用 $set、$watch, Vue.$set(obj, attr) => obj需要为响应式
     // Vue.util.defineReactive(this, 'current', initial)
     Vue.util.defineReactive(this, 'matches', [])
     this.current = initial
@@ -12,6 +27,12 @@ class VueRouter {
 
     window.addEventListener('hashchange', () => {
       this.current = window.location.hash.substring(1)
+      this.matches = []
+      this.matchRoutes()
+    })
+
+    window.addEventListener('pushState', () => {
+      this.current = window.location.pathname
       this.matches = []
       this.matchRoutes()
     })
