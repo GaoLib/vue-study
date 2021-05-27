@@ -2,6 +2,8 @@
   <div class="about">
     <h1>This is an about page</h1>
     <span @click="add('4', '5')">{{ number }}</span>
+    <br>
+    <router-link to="/about/child">To Child</router-link>
     <router-view></router-view>
   </div>
 </template>

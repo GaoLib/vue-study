@@ -10,7 +10,6 @@ const _wrapper = type => {
 }
 
 history.pushState = _wrapper('pushState')
-history.replaceState = _wrapper('replaceState')
 
 let Vue
 class VueRouter {
@@ -26,16 +25,24 @@ class VueRouter {
     this.matchRoutes()
 
     window.addEventListener('hashchange', () => {
-      this.current = window.location.hash.substring(1)
-      this.matches = []
-      this.matchRoutes()
+      this.handleAddChange(true)
     })
 
     window.addEventListener('pushState', () => {
-      this.current = window.location.pathname
-      this.matches = []
-      this.matchRoutes()
+      setTimeout(() => {
+        this.handleAddChange()
+      })
     })
+
+    window.addEventListener('popstate', () => {
+      this.handleAddChange()
+    })
+  }
+
+  handleAddChange(isHash = false) {
+    this.current = isHash ? window.location.hash.substring(1) : window.location.pathname
+    this.matches = []
+    this.matchRoutes()
   }
 
   matchRoutes(routes) {
