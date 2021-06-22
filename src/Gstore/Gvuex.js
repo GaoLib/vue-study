@@ -1,23 +1,42 @@
 let Vue
-// state 属性 响应式
-// commit, dispatch 方法
+// * state 属性 响应式
+// * commit, dispatch 方法
 class Store {
   constructor(options) {
-    // Vue.util.defineReactive(this, 'state', options.state)
+
+    this._mutations = options.mutations
+    this._actions = options.actions
+    this._getters = options.getters
+    this.getters = {}
+    const computed = {}
+
+    const store = this // * 保存this指向
+    Object.keys(this._getters).forEach((key) => {
+      const fn = this._getters[key]
+      // ! 转换为无参数函数, 封装一层
+      computed[key] = function() {
+        return fn(store.state)
+      }
+      // *为getter定义只读属性
+      Object.defineProperty(store.getters, key, {
+        get: () => store._vm[key]
+      })
+    })
+
+    // ? Vue.util.defineReactive(this, 'state', options.state)
     this._vm = new Vue({
       data: {
         $$state: options.state
-      }
+      },
+      computed,
     })
-    this._mutations = options.mutations
-    this._actions = options.actions
 
-    this.commit = this.commit.bind(this)   // 绑定上下文
+    this.commit = this.commit.bind(this)   // * 绑定上下文
     this.dispatch = this.dispatch.bind(this)
   }
 
   get state() {
-    return this._vm.$data.$$state  // $$不会被代理,不能直接使用 this._vm.$$state
+    return this._vm.$data.$$state  // ! $$不会被代理,不能直接使用 this._vm.$$state
   }
 
   set state(v) {
@@ -55,4 +74,4 @@ function install(_Vue) {
   })
 }
 
-export default { Store, install }  // 对象为Vuex
+export default { Store, install }  // ! 对象为Vuex

@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
+import Vuex from './Gvuex'
 
 // this.$store
 // this.$store.state.xxx
