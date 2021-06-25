@@ -1,5 +1,5 @@
 function defineReactive(obj, key, val) {
-  // ! 递归处理
+  // ! 递归处理  ==> L43
   observe(val)
 
   Object.defineProperty(obj, key, {
@@ -10,16 +10,14 @@ function defineReactive(obj, key, val) {
     set(newVal) {
       if (newVal !== val) {
         console.log('set', key)
+        // ! 处理newVal也是对象的情况  ==>  L51
+        observe(newVal)
         val = newVal
-        // update()
       }
     }
   })
 }
 
-// function update() {
-//   app.innerText = obj.foo
-// }
 // * 遍历obj中每个key，执行响应式定义
 function observe(obj) {
   // ! 判断传入obj是否是对象
@@ -30,17 +28,25 @@ function observe(obj) {
   })
 }
 
-const obj = {
-  foo: 'foo',
-  bar: 'bar',
-  baz: {
-    a: 'a',
-  },
+// ! 初始obj未定义的属性  ==> L55
+function set(obj, key, val) {
+  defineReactive(obj, key, val)
 }
-observe(obj)
-obj.foo
-obj.bar
-obj.baz.a
-// setInterval(() => {
-//   obj.foo = new Date().toLocaleString()
-// }, 1000)
+
+// const obj = {
+//   foo: 'foo',
+//   bar: 'bar',
+//   baz: {
+//     a: 'a',
+//   },
+// }
+// observe(obj)
+// obj.foo
+// obj.bar
+// obj.baz.a
+// obj.baz = {
+//   a: 10
+// }
+// obj.baz.a
+// set(obj, 'dong', 'dong')
+// obj.dong
