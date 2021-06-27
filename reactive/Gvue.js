@@ -43,6 +43,19 @@ class Observer {
   }
 }
 
+function proxy(vm) {
+  Object.keys(vm.$data).forEach((key) => {
+    Object.defineProperty(vm, key, {
+      get() {
+        return vm.$data[key]
+      },
+      set(v) {
+        vm.$data[key] = v
+      }
+    })
+  })
+}
+
 class Gvue {
   constructor(options) {
     // * 1. 保存配置
@@ -50,6 +63,42 @@ class Gvue {
     this.$data = options.data
     // * 2. 对data响应式处理
     observe(this.$data)
-    // * 3. 编译试图模板
+    // * 3. 代理
+    proxy(this)
+    // * 4. 编译试图模板
+    new Compile(options.el, this)
+  }
+}
+
+class Compile {
+  constructor(el, vm) {
+    this.$vm = vm
+    this.$el = document.querySelector(el)
+
+    if (this.$el) this.compile(this.$el)
+  }
+  
+  compile(el) {
+    // * 对el dom数递归遍历
+    // ! children 只返回HTML节点，不返回文本节点
+    el.childNodes.forEach((node) => {
+      // * 元素
+      if (node.nodeType === 1) {
+        console.log('元素节点', node.nodeName)
+        if (node.childNodes.length) this.compile(node)
+      }
+      // * 文本
+      if (this.isInter(node)) {
+        this.compileText(node)
+      }
+    })
+  }
+
+  isInter(node) {
+    return node.nodeType === 3 && /\{\{(.*)\}\}/.test(node.textContent)
+  }
+
+  compileText(node) {
+    node.textContent = this.$vm[RegExp.$1.trim()]
   }
 }
