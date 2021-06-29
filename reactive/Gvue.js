@@ -2,9 +2,14 @@ function defineReactive(obj, key, val) {
   // ! 递归处理 
   observe(val)
 
+  // ! 创建对应的Dep实例
+  const dep = new Dep()
+
   Object.defineProperty(obj, key, {
     get() {
       console.log('get', key)
+      // ! 添加依赖
+      Dep.target && dep.addDep(Dep.target)
       return val
     },
     set(newVal) {
@@ -13,8 +18,8 @@ function defineReactive(obj, key, val) {
         // ! 处理newVal也是对象的情况
         observe(newVal)
         val = newVal
-        
-        watchers.forEach(w => w.update())
+
+        dep.notify()
       }
     }
   })
@@ -67,7 +72,7 @@ class Gvue {
     observe(this.$data)
     // * 3. 代理
     proxy(this)
-    // * 4. 编译试图模板
+    // * 4. 编译视图模板
     new Compile(options.el, this)
   }
 }
@@ -151,8 +156,6 @@ class Compile {
   }
 }
 
-const watchers = []
-
 // ! 收集更新函数，负责视图中依赖的更新
 class Watcher {
   constructor(vm, key, updater) {
@@ -160,11 +163,29 @@ class Watcher {
     this.$key = key
     this.$updater = updater
 
-    watchers.push(this)
+    // ! 尝试读取key,触发依赖收集
+    Dep.target = this
+    this.$vm[this.$key]
+    Dep.target = null
   }
 
   // ! 会被Dep调用
   update() {
     this.$updater.call(this.$vm, this.$vm[this.$key])
+  }
+}
+
+// ! Dep 和 data 中的每一个key一一对应
+class Dep {
+  constructor() {
+    this.deps = []
+  }
+  
+  addDep(watcher) {
+    this.deps.push(watcher)
+  }
+
+  notify() {
+    this.deps.forEach(watcher => watcher.update())
   }
 }
