@@ -12,6 +12,9 @@
     <p>{{ counter }}</p>
     <p g-text="counter"></p>
     <p g-html="desc"></p>
+    <input type="text" g-model="name" />
+    <span>{{ name }}</span>
+    <button @click="add">count</button>
   </div>
   <script>
     const app = new Gvue({
@@ -19,11 +22,17 @@
       data: {
         counter: 1,
         desc: '<span style="color: red;">Go Go Go</span>',
+        name: '',
+      },
+      methods: {
+        add: function() {
+          this.counter++
+        },
       },
     })
-    setInterval(() => {
-      app.counter++
-    }, 1000)
+    // setInterval(() => {
+    //   app.counter++
+    // }, 1000)
   </script>
 </body>
 </html>

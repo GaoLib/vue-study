@@ -68,6 +68,7 @@ class Gvue {
     // * 1. 保存配置
     this.$options = options
     this.$data = options.data
+    this.$methods = options.methods
     // * 2. 对data响应式处理
     observe(this.$data)
     // * 3. 代理
@@ -134,11 +135,21 @@ class Compile {
         const dir = attrName.substring(2)
         this[dir] && this[dir](node, exp)
       }
+      if (this.isEvent(attrName)) {
+        const eveName = attrName.substring(1)
+        node.addEventListener(eveName, () => {
+          this.$vm.$methods[exp].call(this.$vm)
+        })
+      }
     })
   }
   
   isDir(attr) {
     return attr.startsWith('g-')
+  }
+
+  isEvent(attr) {
+    return attr[0] ===  '@'
   }
 
   // * g-text
@@ -151,8 +162,20 @@ class Compile {
     this.update(node, exp, 'html')
   }
 
+  // * g-model
+  model(node, exp) {
+    this.update(node, exp, 'model')
+    node.addEventListener('input', (e) => {
+      this.$vm[exp] = e.target.value
+    })
+  }
+
   htmlUpdater(node, val) {
     node.innerHTML = val
+  }
+
+  modelUpdater(node, val) {
+    node.value = val
   }
 }
 
