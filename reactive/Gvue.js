@@ -1,3 +1,14 @@
+// * 数组响应式
+const originalProto = Array.prototype
+const arrayProto = Object.create(originalProto);
+['push', 'pop', 'shift', 'unshift', 'sort', 'splice', 'reverse'].forEach((method) => {
+  arrayProto[method] = function() {
+    originalProto[method].apply(this, arguments)
+    console.log(`数组执行${method}操作` )
+  }
+})
+
+
 function defineReactive(obj, key, val) {
   // ! 递归处理 
   observe(val)
@@ -37,7 +48,11 @@ function observe(obj) {
 class Observer {
   constructor(value) {
     if (Array.isArray(value)) {
-      // todo
+      value.__proto__ = arrayProto
+      const keys = Object.keys(value)
+      for (let i = 0; i < keys.length; i++) {
+        observe(value[i]);
+      }
     } else {
       this.walk(value)
     }

@@ -15,6 +15,7 @@
     <input type="text" g-model="name" />
     <span>{{ name }}</span>
     <button @click="add">count</button>
+    <p>{{ array }}</p>
   </div>
   <script>
     const app = new Gvue({
@@ -23,10 +24,12 @@
         counter: 1,
         desc: '<span style="color: red;">Go Go Go</span>',
         name: '',
+        array: [1,2,3],
       },
       methods: {
         add: function() {
           this.counter++
+          this.array.push(this.array.length+1)
         },
       },
     })
