@@ -4,6 +4,7 @@ const arrayProto = Object.create(originalProto);
 ['push', 'pop', 'shift', 'unshift', 'sort', 'splice', 'reverse'].forEach((method) => {
   arrayProto[method] = function() {
     originalProto[method].apply(this, arguments)
+    this.__dep__.notify()
     console.log(`数组执行${method}操作` )
   }
 })
@@ -20,7 +21,13 @@ function defineReactive(obj, key, val) {
     get() {
       console.log('get', key)
       // ! 添加依赖
-      Dep.target && dep.addDep(Dep.target)
+      // Dep.target && dep.addDep(Dep.target)
+      if (Dep.target) {
+        dep.addDep(Dep.target)
+        if (Array.isArray(val)) {
+          dependArray(val)
+        }
+      }
       return val
     },
     set(newVal) {
@@ -44,10 +51,33 @@ function observe(obj) {
   new Observer(obj)
 }
 
+function def(obj, key, val, enumerable = true) {
+  Object.defineProperty(obj, key, {
+    value: val,
+    enumerable: !!enumerable,
+    writable: true,
+    configurable: true,
+  })
+}
+
+function dependArray (value) {
+  value && value.__dep__ && value.__dep__.addDep(Dep.target)
+  for (let e, i = 0, l = value.length; i < l; i++) {
+    e = value[i]
+    e && e.__dep__ && e.__dep__.addDep(Dep.target)
+    if (Array.isArray(e)) {
+      dependArray(e)
+    }
+  }
+}
+
+
 // * 传入obj, 判断obj类型，做不同响应式处理
 class Observer {
   constructor(value) {
     if (Array.isArray(value)) {
+      const dep = new Dep()
+      def(value, '__dep__', dep)
       value.__proto__ = arrayProto
       const keys = Object.keys(value)
       for (let i = 0; i < keys.length; i++) {
