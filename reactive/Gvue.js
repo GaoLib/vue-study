@@ -4,8 +4,7 @@ const arrayProto = Object.create(originalProto);
 ['push', 'pop', 'shift', 'unshift', 'sort', 'splice', 'reverse'].forEach((method) => {
   arrayProto[method] = function() {
     originalProto[method].apply(this, arguments)
-    this.__dep__.notify()
-    console.log(`数组执行${method}操作` )
+    this.__ob__.dep.notify()
   }
 })
 
@@ -19,7 +18,6 @@ function defineReactive(obj, key, val) {
 
   Object.defineProperty(obj, key, {
     get() {
-      console.log('get', key)
       // ! 添加依赖
       // Dep.target && dep.addDep(Dep.target)
       if (Dep.target) {
@@ -32,7 +30,6 @@ function defineReactive(obj, key, val) {
     },
     set(newVal) {
       if (newVal !== val) {
-        console.log('set', key)
         // ! 处理newVal也是对象的情况
         observe(newVal)
         val = newVal
@@ -51,7 +48,7 @@ function observe(obj) {
   new Observer(obj)
 }
 
-function def(obj, key, val, enumerable = true) {
+function def(obj, key, val, enumerable = false) {
   Object.defineProperty(obj, key, {
     value: val,
     enumerable: !!enumerable,
@@ -61,10 +58,10 @@ function def(obj, key, val, enumerable = true) {
 }
 
 function dependArray (value) {
-  value && value.__dep__ && value.__dep__.addDep(Dep.target)
+  value && value.__ob__ && value.__ob__ && value.__ob__.dep.addDep(Dep.target)
   for (let e, i = 0, l = value.length; i < l; i++) {
     e = value[i]
-    e && e.__dep__ && e.__dep__.addDep(Dep.target)
+    e && e.__ob__ && e.__ob__.dep && e.__ob__.dep.addDep(Dep.target)
     if (Array.isArray(e)) {
       dependArray(e)
     }
@@ -75,9 +72,10 @@ function dependArray (value) {
 // * 传入obj, 判断obj类型，做不同响应式处理
 class Observer {
   constructor(value) {
+    this.value = value
+    this.dep = new Dep()
+    def(value, '__ob__', this)
     if (Array.isArray(value)) {
-      const dep = new Dep()
-      def(value, '__dep__', dep)
       value.__proto__ = arrayProto
       const keys = Object.keys(value)
       for (let i = 0; i < keys.length; i++) {
