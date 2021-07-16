@@ -30,6 +30,7 @@ function defineReactive(obj, key, val) {
     },
     set(newVal) {
       if (newVal !== val) {
+        console.log('set', key)
         // ! 处理newVal也是对象的情况
         observe(newVal)
         val = newVal
@@ -121,6 +122,8 @@ class Gvue {
   }
 }
 
+Gvue.prototype.$set = set
+
 class Compile {
   constructor(el, vm) {
     this.$vm = vm
@@ -153,7 +156,15 @@ class Compile {
   update(node, exp, dir) {
     // ! 1. 初始化
     const fn = this[`${dir}Updater`]
-    fn && fn(node, this.$vm[exp])
+    // ! obj.foo 嵌套对象情况
+    let tep = this.$vm[exp]
+    const values = exp.split('.')
+    if (values.length > 1 && this.$vm[values[0]]) {
+      tep = values.reduce((obj, value) => {
+        return obj[value]
+      }, this.$vm)
+    }
+    fn && fn(node, tep)
     // ! 2. 创建watcher实例
     new Watcher(this.$vm, exp, function(val) {
       fn && fn(node, val)
@@ -231,7 +242,16 @@ class Watcher {
 
     // ! 尝试读取key,触发依赖收集
     Dep.target = this
-    this.$vm[this.$key]
+    // this.$vm[this.$key]
+    let exp = this.$key
+    const values = exp.split('.')
+    if (values.length > 1 && this.$vm[values[0]]) {
+      exp = values.reduce((obj, value) => {
+        return obj[value]
+      }, this.$vm)
+    } else {
+      this.$vm[exp]
+    }
     Dep.target = null
   }
 
@@ -254,4 +274,25 @@ class Dep {
   notify() {
     this.deps.forEach(watcher => watcher.update())
   }
+}
+
+function set(target, key, val) {
+  console.log(target.__ob__)
+  if (Array.isArray(target)) {
+    target.length = Math.max(target.length, key)
+    target.splice(key, 1, val)
+    return val
+  }
+  if (key in target && !(key in Object.prototype)) {
+    target[key] = val
+    return val
+  }
+  const ob = target.__ob__
+  if (!ob) {
+    target[key] = val
+    return val
+  }
+  defineReactive(ob.value, key, val)
+  ob.dep.notify()
+  return val
 }
