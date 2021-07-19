@@ -30,7 +30,7 @@ function defineReactive(obj, key, val) {
     },
     set(newVal) {
       if (newVal !== val) {
-        console.log('set', key)
+        console.log('set', key, newVal)
         // ! 处理newVal也是对象的情况
         observe(newVal)
         val = newVal
@@ -157,14 +157,7 @@ class Compile {
     // ! 1. 初始化
     const fn = this[`${dir}Updater`]
     // ! obj.foo 嵌套对象情况
-    let tep = this.$vm[exp]
-    const values = exp.split('.')
-    if (values.length > 1 && this.$vm[values[0]]) {
-      tep = values.reduce((obj, value) => {
-        return obj[value]
-      }, this.$vm)
-    }
-    fn && fn(node, tep)
+    fn && fn(node, parseObj(this.$vm, exp))
     // ! 2. 创建watcher实例
     new Watcher(this.$vm, exp, function(val) {
       fn && fn(node, val)
@@ -233,6 +226,17 @@ class Compile {
   }
 }
 
+function parseObj(data, exp) {
+  let res = data[exp]
+  const values = exp.split('.')
+  if (values.length > 1 && data[values[0]]) {
+    res = values.reduce((obj, value) => {
+      return obj[value]
+    }, data)
+  }
+  return res
+}
+
 // ! 收集更新函数，负责视图中依赖的更新
 class Watcher {
   constructor(vm, key, updater) {
@@ -242,22 +246,15 @@ class Watcher {
 
     // ! 尝试读取key,触发依赖收集
     Dep.target = this
-    // this.$vm[this.$key]
-    let exp = this.$key
-    const values = exp.split('.')
-    if (values.length > 1 && this.$vm[values[0]]) {
-      exp = values.reduce((obj, value) => {
-        return obj[value]
-      }, this.$vm)
-    } else {
-      this.$vm[exp]
-    }
+    // ? this.$vm[this.$key]
+    parseObj(this.$vm, this.$key)
     Dep.target = null
   }
 
   // ! 会被Dep调用
   update() {
-    this.$updater.call(this.$vm, this.$vm[this.$key])
+    const obj = parseObj(this.$vm, this.$key)
+    this.$updater.call(this.$vm, obj)
   }
 }
 
