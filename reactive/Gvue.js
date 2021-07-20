@@ -245,10 +245,12 @@ class Watcher {
     this.$updater = updater
 
     // ! 尝试读取key,触发依赖收集
-    Dep.target = this
+    // Dep.target = this
+    pushTarget(this)
     // ? this.$vm[this.$key]
-    parseObj(this.$vm, this.$key)
-    Dep.target = null
+    let found = parseObj(this.$vm, this.$key)
+    // Dep.target = null
+    if (found !== undefined) popTarget()
   }
 
   // ! 会被Dep调用
@@ -273,8 +275,19 @@ class Dep {
   }
 }
 
+const targetStack = []
+
+function pushTarget (target) {
+  targetStack.push(target)
+  Dep.target = target
+}
+
+function popTarget () {
+  targetStack.pop()
+  Dep.target = targetStack[targetStack.length - 1]
+}
+
 function set(target, key, val) {
-  console.log(target.__ob__)
   if (Array.isArray(target)) {
     target.length = Math.max(target.length, key)
     target.splice(key, 1, val)
