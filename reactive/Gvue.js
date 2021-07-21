@@ -11,7 +11,7 @@ const arrayProto = Object.create(originalProto);
 
 function defineReactive(obj, key, val) {
   // ! 递归处理 
-  observe(val)
+  let childOb = observe(val)
 
   // ! 创建对应的Dep实例
   const dep = new Dep()
@@ -22,6 +22,10 @@ function defineReactive(obj, key, val) {
       // Dep.target && dep.addDep(Dep.target)
       if (Dep.target) {
         dep.addDep(Dep.target)
+        if (childOb) {
+          console.log(childOb)
+          childOb.dep.addDep(Dep.target)
+        }
         if (Array.isArray(val)) {
           dependArray(val)
         }
@@ -42,11 +46,16 @@ function defineReactive(obj, key, val) {
 }
 
 // * 遍历obj中每个key，执行响应式定义
-function observe(obj) {
+function observe(value) {
   // ! 判断传入obj是否是对象
-  if (typeof obj !== 'object' || obj === null) return
+  if (typeof value !== 'object' || value === null) return
 
-  new Observer(obj)
+  if (value.__ob__ instanceof Observer) {
+    ob = value.__ob__
+  } else {
+    ob = new Observer(value)
+  }
+  return ob
 }
 
 function def(obj, key, val, enumerable = false) {
@@ -248,9 +257,9 @@ class Watcher {
     // Dep.target = this
     pushTarget(this)
     // ? this.$vm[this.$key]
-    let found = parseObj(this.$vm, this.$key)
+    parseObj(this.$vm, this.$key)
     // Dep.target = null
-    if (found !== undefined) popTarget()
+    popTarget()
   }
 
   // ! 会被Dep调用

@@ -9,35 +9,35 @@
 </head>
 <body>
   <div id="app">
-    <p>{{ counter }}</p>
+    <!-- <p>{{ counter }}</p>
     <p g-text="counter"></p>
     <p g-html="desc"></p>
     <input type="text" g-model="name" />
     <span>{{ name }}</span>
-    <p>{{ array }}</p>
+    <p>{{ array }}</p> -->
     <button @click="add">count</button>
     <p>{{ obj.foo }}</p>
-    <!-- <p>{{ obj.bar }}</p> -->
+    <p>{{ obj.bar }}</p>
   </div>
   <script>
     const app = new Gvue({
       el: '#app',
       data: {
-        counter: 1,
-        desc: '<span style="color: red;">Go Go Go</span>',
-        name: '',
-        array: [1,2,3],
+        // counter: 1,
+        // desc: '<span style="color: red;">Go Go Go</span>',
+        // name: '',
+        // array: [1,2,3],
         obj: {
           foo: 'foo'
         },
       },
       methods: {
         add: function() {
-          // this.$set(this.obj, 'foo', 'fooooooo')
-          // this.$set(this.obj, 'bar', 'barrrrrrr')
-          this.obj.foo = 'fooooooo'
-          this.counter++
-          this.array.push(this.array.length+1)
+          this.$set(this.obj, 'foo', 'fooooooo')
+          this.$set(this.obj, 'bar', 'barrrrrrr')
+          // this.obj.foo = 'fooooooo'
+          // this.counter++
+          // this.array.push(this.array.length+1)
           // this.array.unshift(100)
         },
       },
