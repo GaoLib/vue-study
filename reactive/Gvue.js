@@ -23,7 +23,6 @@ function defineReactive(obj, key, val) {
       if (Dep.target) {
         dep.addDep(Dep.target)
         if (childOb) {
-          console.log(childOb)
           childOb.dep.addDep(Dep.target)
         }
         if (Array.isArray(val)) {
@@ -132,6 +131,7 @@ class Gvue {
 }
 
 Gvue.prototype.$set = set
+Gvue.prototype.$delete = del
 
 class Compile {
   constructor(el, vm) {
@@ -314,4 +314,14 @@ function set(target, key, val) {
   defineReactive(ob.value, key, val)
   ob.dep.notify()
   return val
+}
+
+function del(target, key) {
+  if (Array.isArray(target)) {
+    target.splice(key, 1)
+    return
+  }
+  delete target[key]
+  const ob = target.__ob__
+  if (ob) ob.dep.notify()
 }
