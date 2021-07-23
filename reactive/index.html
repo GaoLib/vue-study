@@ -5,6 +5,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reactive</title>
+  <script src="./observer/dep.js"></script>
+  <script src="./observer/watcher.js"></script>
+  <script src="./observer/index.js"></script>
   <script src="./Gvue.js"></script>
 </head>
 <body>
@@ -16,8 +19,8 @@
     <span>{{ name }}</span> -->
     <p>{{ array }}</p>
     <button @click="add">count</button>
-    <!-- <p>{{ obj.foo }}</p> -->
-    <!-- <p>{{ obj.bar }}</p> -->
+    <p>{{ obj.foo }}</p>
+    <p>{{ obj.bar }}</p>
   </div>
   <script>
     const app = new Gvue({
@@ -27,15 +30,15 @@
         // desc: '<span style="color: red;">Go Go Go</span>',
         // name: '',
         array: [1,2,3],
-        // obj: {
-        //   foo: 'foo'
-        // },
+        obj: {
+          foo: 'foo'
+        },
       },
       methods: {
         add: function() {
           // this.$delete(this.obj, 'foo')
-          // this.$set(this.obj, 'bar', 'barrrrrrr')
-          // this.obj.foo = 'fooooooo'
+          this.$set(this.obj, 'bar', 'barrrrrrr')
+          this.obj.foo = 'fooooooo'
           // this.counter++
           // this.array.push(this.array.length+1)
           // this.array.unshift(100)
