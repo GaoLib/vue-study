@@ -36,3 +36,28 @@ reactive
 
 #### src\core\instance\init.js
 > 实例初始化
+
+## 批量异步更新
+### 同步
+#### src\core\observer\index.js
+- defineReactive 中 set 执行 dep.notify()
+
+#### src\core\observer\dep.js
+- watcher 中 update() 执行更新
+
+#### src\core\observer\watcher.js
+- queueWatcher() watch入队
+
+#### src\core\observer\scheduler.js
+- nextTick(flushSchedulerQueue) 尝试使用异步方式去执行flushSchedulerQueue,存入callbacks中
+
+#### src\core\util\next-tick.js
+- timerFunc() 启动异步任务, p.then(flushCallbacks) => 将 flushCallbacks 放入微任务队列
+### 异步
+- flushCallbacks()
+- flushSchedulerQueue()
+- water.run()
+- updateComponent()    【src\core\instance\lifecycle.js】
+- vm._render()
+- vm._update()
+- __patch__
