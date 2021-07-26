@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>snabbdom</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/snabbdom/0.7.4/snabbdom.min.js"></script>
+  <script>
+    function defineReactive(obj, key, val) {
+      Object.defineProperty(obj, key, {
+        get() {
+          return val
+        },
+        set(newVal) {
+          val = newVal
+          update()
+        }
+      })
+    }
+    const {init, h} = snabbdom
+    const patch = init([])
+    let vnode
+    function update() {
+      if (!vnode) {
+        vnode = patch(app, render())
+      } else {
+        vnode = patch(vnode, render())
+      }
+    }
+
+    function render() {
+      return h('div', obj.foo)
+    }
+
+    const obj = {}
+    defineReactive(obj, 'foo', '')
+    obj.foo = new Date().toLocaleTimeString()
+
+    setInterval(() => {
+      obj.foo = new Date().toLocaleTimeString()
+    })
+  </script>
+</body>
+</html>
