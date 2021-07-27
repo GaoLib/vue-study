@@ -54,10 +54,28 @@ reactive
 #### src\core\util\next-tick.js
 - timerFunc() 启动异步任务, p.then(flushCallbacks) => 将 flushCallbacks 放入微任务队列
 ### 异步
-- flushCallbacks()
+#### src\core\util\next-tick.js
+- flushCallbacks() 执行callbacks中所有函数
+
+#### src\core\observer\scheduler.js
 - flushSchedulerQueue()
+
+#### src\core\observer\watcher.js
 - water.run()
-- updateComponent()    【src\core\instance\lifecycle.js】
-- vm._render()
-- vm._update()
+- this.get()
+- this.getter.call(vm, vm)
+
+#### src\core\instance\lifecycle.js
+- updateComponent()
+
+#### src\core\instance\render.js
+- vm._render() 生成虚拟Dom
+
+#### src\core\instance\lifecycle.js
+- vm._update() 转换vnode成dom
+
+#### src\platforms\web\runtime\index.js
 - __patch__
+
+#### src\core\vdom\patch.js  L700
+- patch()
