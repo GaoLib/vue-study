@@ -79,3 +79,6 @@ reactive
 
 #### src\core\vdom\patch.js  L700
 - patch()
+- patchVnode()       同层比较，深度优先
+- updateChildren()   双端判断
+- key的重要性 L37
