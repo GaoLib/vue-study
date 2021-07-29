@@ -82,3 +82,13 @@ reactive
 - patchVnode()       同层比较，深度优先
 - updateChildren()   双端判断
 - key的重要性 L37
+## 组件创建
+> - new Vue()
+> - $mount()
+> - vm._render()
+> - createElement()
+> - createComponent()
+> - vm._update()
+> - patch()
+> - createELm()
+> - createComponent()
