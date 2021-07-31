@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reactive2</title>
+  <script src="./observer/dep.js"></script>
+  <script src="./observer/watcher.js"></script>
+  <script src="./observer/index.js"></script>
+  <script src="./Gvue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <p>{{ counter }}</p>
+    <button @click="add">count</button>
+  </div>
+  <script>
+    const app = new Gvue({
+      el: '#app',
+      data: {
+        counter: 1
+      },
+      // render() {
+      //   const d1 = document.createElement('div')
+      //   d1.id = 'app'
+      //   d1.textContent = this.counter + ''
+      //   return d1
+      // },
+      methods: {
+        add: function() {
+          this.counter++
+        },
+      },
+    })
+    setTimeout(() => {
+      app.counter++
+    }, 1000)
+  </script>
+</body>
+</html>

@@ -28,14 +28,27 @@ class Gvue {
     //   this.$mount(options.el)
     // }
   }
-}
 
-Gvue.prototype.$mount = mount
+  $mount(el) {
+    this.$el = document.querySelector(el)
+  
+    const updateComponent = () => {
+      // * 获取渲染函数
+      const { render } = this.$options
+      // * 得到真实dom
+      const el = render.call(this)
+      // * 获取父元素
+      const parentElm = this.$el.parentElement
+      // * 新元素插入
+      parentElm.insertBefore(el, this.$el.nextSibling)
+      // * 删除模板
+      parentElm.removeChild(this.$el)
+      // * 保存真实节点
+      this.$el = el
+    }
 
-function mount(el) {
-  this.$el = document.querySelector(el)
-
-  const updateComponent = () => {}
+    new Watcher(this, updateComponent)
+  }
 }
 
 Gvue.prototype.$set = set
