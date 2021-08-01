@@ -11,29 +11,21 @@
   <script src="./Gvue.js"></script>
 </head>
 <body>
-  <div id="app">
-    <p>{{ counter }}</p>
-    <button @click="add">count</button>
-  </div>
+  <div id="app"></div>
   <script>
     const app = new Gvue({
       el: '#app',
       data: {
         counter: 1
       },
-      // render() {
-      //   const d1 = document.createElement('div')
-      //   d1.id = 'app'
-      //   d1.textContent = this.counter + ''
-      //   return d1
-      // },
-      methods: {
-        add: function() {
-          this.counter++
-        },
-      },
+      render() {
+        const d1 = document.createElement('div')
+        d1.id = 'app'
+        d1.textContent = this.counter + ''
+        return d1
+      }
     })
-    setTimeout(() => {
+    setInterval(() => {
       app.counter++
     }, 1000)
   </script>

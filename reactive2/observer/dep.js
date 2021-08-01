@@ -1,11 +1,11 @@
 // ! Dep 和 data 中的每一个key一一对应
 class Dep {
   constructor() {
-    this.deps = []
+    this.deps = new Set()
   }
   
   addDep(watcher) {
-    this.deps.push(watcher)
+    this.deps.add(watcher)
   }
 
   notify() {

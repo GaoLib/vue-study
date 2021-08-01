@@ -24,9 +24,9 @@ class Gvue {
     // * 4. 编译视图模板
     new Compile(options.el, this)
     // * 5. 调用 $mount
-    // if (options.el) {
-    //   this.$mount(options.el)
-    // }
+    if (options.el) {
+      this.$mount(options.el)
+    }
   }
 
   $mount(el) {
