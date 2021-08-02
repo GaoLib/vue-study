@@ -18,11 +18,15 @@
       data: {
         counter: 1
       },
-      render() {
-        const d1 = document.createElement('div')
-        d1.id = 'app'
-        d1.textContent = this.counter + ''
-        return d1
+      render(h) {
+        // dom
+        // const d1 = document.createElement('div')
+        // d1.id = 'app'
+        // d1.textContent = this.counter + ''
+        // return d1
+
+        // vdom
+        return h('div', {id: 'app'}, this.counter + '')
       }
     })
     setInterval(() => {

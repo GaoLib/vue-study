@@ -22,7 +22,7 @@ class Gvue {
     // * 3. 代理
     proxy(this)
     // * 4. 编译视图模板
-    new Compile(options.el, this)
+    // new Compile(options.el, this)
     // * 5. 调用 $mount
     if (options.el) {
       this.$mount(options.el)
@@ -35,19 +35,81 @@ class Gvue {
     const updateComponent = () => {
       // * 获取渲染函数
       const { render } = this.$options
+      // * dom
       // * 得到真实dom
-      const el = render.call(this)
+      // const el = render.call(this, this.$createElement)
       // * 获取父元素
-      const parentElm = this.$el.parentElement
+      // const parentElm = this.$el.parentElement
       // * 新元素插入
-      parentElm.insertBefore(el, this.$el.nextSibling)
+      // parentElm.insertBefore(el, this.$el.nextSibling)
       // * 删除模板
-      parentElm.removeChild(this.$el)
+      // parentElm.removeChild(this.$el)
       // * 保存真实节点
-      this.$el = el
+      // this.$el = el
+
+      // * vdom
+      const vnode = render.call(this, this.$createElement)
+      this._update(vnode)
     }
 
     new Watcher(this, updateComponent)
+  }
+
+  $createElement(tag, props, children) {
+    return {tag, props, children}
+  }
+
+  _update(vnode) {
+    // 获取上一次vnode
+    const prevVode = this._vnode
+
+    if (!prevVode) {
+      // * init
+      this.__patch__(this.$el, vnode)
+    } else {
+      // * update
+      this.__patch__(prevVode, vnode)
+    }
+  }
+
+  __patch__(oldVnode, vnode) {
+    if (oldVnode.nodeType) {
+      // * oldVnode 是dom
+      const parent = oldVnode.parentElement
+      const refEle = oldVnode.nextSibling
+      // * vnode转换为dom
+      const el = this.createEle(vnode)
+      parent.insertBefore(el, refEle)
+      parent.removeChild(oldVnode)
+    } else {
+      // todo update
+    }
+
+    // ! 保存vnode,更新使用
+    this._vnode = vnode
+  }
+
+  createEle(vnode) {
+    // ! dom创建
+    // * 1.创建根节点
+    const el = document.createElement(vnode.tag)
+    // * 2.attrs
+    for (let key in vnode.props) {
+      el.setAttribute(key, vnode.props[key])
+    }
+    // * 3.children
+    if(vnode.children) {
+      if (typeof vnode.children === 'string') {
+        // * text
+        el.textContent = vnode.children
+      } else {
+
+      }
+    }
+    // * 4.保存
+    vnode.el = el
+
+    return el
   }
 }
 
