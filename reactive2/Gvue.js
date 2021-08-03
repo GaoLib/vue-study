@@ -94,8 +94,10 @@ class Gvue {
     // * 1.创建根节点
     const el = document.createElement(vnode.tag)
     // * 2.attrs
-    for (let key in vnode.props) {
-      el.setAttribute(key, vnode.props[key])
+    if (vnode.props) {
+      for (const key in vnode.props) {
+        el.setAttribute(key, vnode.props[key])
+      }
     }
     // * 3.children
     if(vnode.children) {
@@ -103,7 +105,11 @@ class Gvue {
         // * text
         el.textContent = vnode.children
       } else {
-
+        // * array
+        vnode.children.forEach((child) => {
+          const childDom = this.createEle(child)
+          el.appendChild(childDom)
+        })
       }
     }
     // * 4.保存

@@ -26,7 +26,11 @@
         // return d1
 
         // vdom
-        return h('div', {id: 'app'}, this.counter + '')
+        return h('div', {id: 'app'}, [
+          h('p', null, this.counter + ''),
+          h('p', null, this.counter + ''),
+          h('p', null, this.counter + '')
+        ])
       }
     })
     setInterval(() => {
