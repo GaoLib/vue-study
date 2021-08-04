@@ -73,6 +73,7 @@ class Gvue {
   }
 
   __patch__(oldVnode, vnode) {
+    // ! init
     if (oldVnode.nodeType) {
       // * oldVnode 是dom
       const parent = oldVnode.parentElement
@@ -82,11 +83,54 @@ class Gvue {
       parent.insertBefore(el, refEle)
       parent.removeChild(oldVnode)
     } else {
-      // todo update
+      // ! update
+      // * 获取要更新的vnode
+      const el = vnode.el = oldVnode.el
+      // * props
+      // todo
+      // * children
+      const oldCh = oldVnode.children
+      const newCh = vnode.children
+      if (typeof newCh === 'string') {
+        if (typeof oldCh === 'string') {
+          // * 两个都为text
+          if (newCh !== oldCh) el.textContent = newCh
+        } else {
+          // * newCh为text,oldCh为array
+          el.textContent = newCh
+        }
+      } else {
+        if (typeof oldCh === 'string') {
+          // * newCh为array,oldCh为text
+          el.innerHTML = ''
+          newCh.forEach(child => {
+            el.appendChild(this.createEle(child))
+          })
+        } else {
+          this.updateChildren(el, oldCh, newCh)
+        }
+      }
     }
 
     // ! 保存vnode,更新使用
     this._vnode = vnode
+  }
+
+  updateChildren(parentEle, oldCh, newCh) {
+    const len = Math.min(oldCh.length, newCh.length)
+    // ! 遍历较短数组,直接更新
+    for (let i=0;i<len;i++) {
+      this.__patch__(oldCh[i], newCh[i])
+    }
+    if (newCh.length > oldCh.length) {
+      newCh.slice(len).forEach(child => {
+        parentEle.appendChild(this.createEle(child))
+      })
+    } else if (newCh.length < oldCh.length) {
+      oldCh.slice(len).forEach(child => {
+        parentEle.removeChild(child.el)
+      })
+    }
   }
 
   createEle(vnode) {
