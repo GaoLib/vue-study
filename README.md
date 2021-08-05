@@ -82,13 +82,25 @@ reactive
 - patchVnode()       同层比较，深度优先
 - updateChildren()   双端判断
 - key的重要性 L37
-## 组件创建
-> - new Vue()
-> - $mount()
-> - vm._render()
-> - createElement()
-> - createComponent()
-> - vm._update()
-> - patch()
-> - createELm()
-> - createComponent()
+
+## 创建组件
+#### src\core\instance\render.js
+- vm._render()
+> render(h('comp', {}, 'aaaa'))
+> 执行h = _createElement 函数
+
+#### src\core\vdom\create-element.js
+- _createElement() 接收配置信息，返回vdom
+
+#### src\core\vdom\create-component.js
+- createComponent() 接收配置信息，返回vnode
+- installComponentHooks() 安装组件钩子（componentVNodeHooks）
+- createComponentInstanceForVnode()  init 钩子内，创建组件vnode实例（此时未执行）
+
+#### src\core\instance\lifecycle.js
+- vm._update() 转换vnode成dom
+
+#### src\core\vdom\patch.js
+- patch()
+- createElm()  创建元素
+- createComponent() 执行init钩子，得到组件实例
