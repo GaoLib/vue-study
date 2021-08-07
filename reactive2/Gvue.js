@@ -115,6 +115,10 @@ class Gvue {
   }
 
   updateChildren(parentEle, oldCh, newCh) {
+    if (typeof newCh[0] !== 'object') {
+      parentEle.textContent = newCh
+      return
+    }
     const len = Math.min(oldCh.length, newCh.length)
     // ! 遍历较短数组,直接更新
     for (let i=0;i<len;i++) {
@@ -148,10 +152,14 @@ class Gvue {
         el.textContent = vnode.children
       } else {
         // * array
-        vnode.children.forEach((child) => {
-          const childDom = this.createEle(child)
-          el.appendChild(childDom)
-        })
+        if (typeof vnode.children[0] === 'object') {
+          vnode.children.forEach((child) => {
+            const childDom = this.createEle(child)
+            el.appendChild(childDom)
+          })
+        } else {
+          el.textContent = vnode.children
+        }
       }
     }
     // * 4.保存
