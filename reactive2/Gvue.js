@@ -53,7 +53,12 @@ class Gvue {
     new Watcher(this, updateComponent)
   }
 
-  $createElement(tag, props, children) {
+  $createElement(tag, obj, children) {
+    let props = obj
+    if (props) {
+      const { styles, on, ...attrs } = props
+      props = {styles, on, ...attrs}
+    }
     return {tag, props, children}
   }
 
@@ -139,10 +144,18 @@ class Gvue {
     // ! dom创建
     // * 1.创建根节点
     const el = document.createElement(vnode.tag)
-    // * 2.attrs
+    // * 2.props
     if (vnode.props) {
-      for (const key in vnode.props) {
-        el.setAttribute(key, vnode.props[key])
+      const { styles, on, ...attrs } = vnode.props
+      if (styles) {
+        for (const key in styles) {
+          el.style[key] = styles[key]
+        }
+      }
+      if (attrs) {
+        for (const key in attrs) {
+          el.setAttribute(key, attrs[key])
+        }
       }
     }
     // * 3.children
