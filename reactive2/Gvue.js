@@ -56,8 +56,8 @@ class Gvue {
   $createElement(tag, obj, children) {
     let props = obj
     if (props) {
-      const { styles, on, ...attrs } = props
-      props = {styles, on, ...attrs}
+      const { styles, on, attrs } = props
+      props = {styles, on, attrs}
     }
     return {tag, props, children}
   }
@@ -146,7 +146,7 @@ class Gvue {
     const el = document.createElement(vnode.tag)
     // * 2.props
     if (vnode.props) {
-      const { styles, on, ...attrs } = vnode.props
+      const { styles, on, attrs } = vnode.props
       if (styles) {
         for (const key in styles) {
           el.style[key] = styles[key]
@@ -155,6 +155,15 @@ class Gvue {
       if (attrs) {
         for (const key in attrs) {
           el.setAttribute(key, attrs[key])
+        }
+      }
+      if (on) {
+        for (const key in on) {
+          const fn = this.$options.methods[on[key]]
+          console.log(fn)
+          el.addEventListener(key, () => {
+            fn.call(this)
+          })
         }
       }
     }

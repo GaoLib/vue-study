@@ -31,16 +31,34 @@
 
         // vdom
         // return h('div', {id: 'app'}, this.counter + '')
-        return h('div', {id: 'app', styles: {color:'red'}}, [
-          h('p', null, this.obj.foo),
-          h('p', null, this.array)
-        ])
+        return h('div',
+          {
+            attrs: {
+              id: 'app'
+            },
+            styles: {
+              color:'red'
+            },
+            on: {
+              click: 'onclick'
+            }
+          },
+          [
+            h('p', null, this.obj.bar),
+            h('p', null, this.array)
+          ]
+        )
+      },
+      methods: {
+        onclick: function() {
+          this.$set(this.obj, 'bar', 'barrrrrrrr')
+        }
       }
     })
-    setTimeout(() => {
-      app.obj.foo = 'fooooooo'
-      app.array.push(4)
-    }, 1000)
+    // setTimeout(() => {
+    //   app.obj.foo = 'fooooooo'
+    //   app.array.push(4)
+    // }, 1000)
   </script>
 </body>
 </html>
