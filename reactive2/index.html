@@ -20,7 +20,8 @@
         obj: {
           foo: 'foo'
         },
-        array: [1,2,3]
+        txtColor: 'black',
+        array: [1,2,3,4,5]
       },
       render(h) {
         // dom
@@ -44,21 +45,23 @@
             }
           },
           [
-            h('p', null, this.obj.bar),
+            h('p', {
+              styles: {
+                color: this.txtColor
+              }
+            }, this.obj.bar),
             h('p', null, this.array)
           ]
         )
       },
       methods: {
         onclick: function() {
+          this.txtColor = 'green'
           this.$set(this.obj, 'bar', 'barrrrrrrr')
+          this.$delete(this.array, this.array.length-1)
         }
       }
     })
-    // setTimeout(() => {
-    //   app.obj.foo = 'fooooooo'
-    //   app.array.push(4)
-    // }, 1000)
   </script>
 </body>
 </html>

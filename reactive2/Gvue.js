@@ -94,7 +94,7 @@ class Gvue {
       // * children
       const oldCh = oldVnode.children
       const newCh = vnode.children
-      if (typeof newCh === 'string') {
+      if (!newCh || typeof newCh === 'string') {
         if (typeof oldCh === 'string') {
           // * 两个都为text
           if (newCh !== oldCh) el.textContent = newCh
@@ -160,7 +160,6 @@ class Gvue {
       if (on) {
         for (const key in on) {
           const fn = this.$options.methods[on[key]]
-          console.log(fn)
           el.addEventListener(key, () => {
             fn.call(this)
           })
