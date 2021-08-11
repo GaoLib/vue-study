@@ -20,7 +20,8 @@
         obj: {
           foo: 'foo'
         },
-        txtColor: 'black',
+        txtColor1: 'black',
+        txtColor2: 'black',
         array: [1,2,3,4,5]
       },
       render(h) {
@@ -47,16 +48,21 @@
           [
             h('p', {
               styles: {
-                color: this.txtColor
+                color: this.txtColor1
               }
-            }, this.obj.bar),
-            h('p', null, this.array)
+            }, this.obj.foo),
+            h('p', {
+              styles: {
+                color: this.txtColor2
+              }
+            }, this.array)
           ]
         )
       },
       methods: {
         onclick: function() {
-          this.txtColor = 'green'
+          this.txtColor1 = 'yellow'
+          this.txtColor2 = ''
           this.$set(this.obj, 'bar', 'barrrrrrrr')
           this.$delete(this.array, this.array.length-1)
         }

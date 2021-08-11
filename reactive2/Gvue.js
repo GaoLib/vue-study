@@ -90,7 +90,13 @@ class Gvue {
       // * 获取要更新的vnode
       const el = vnode.el = oldVnode.el
       // * props
-      // todo
+      const oldStyles = oldVnode.props && oldVnode.props.styles
+      const styles = oldVnode.props && vnode.props.styles
+      for (let key in styles) {
+        if (styles[key] !== oldStyles[key]) {
+          el.style.setProperty(key, styles[key])
+        }
+      }
       // * children
       const oldCh = oldVnode.children
       const newCh = vnode.children
@@ -149,7 +155,7 @@ class Gvue {
       const { styles, on, attrs } = vnode.props
       if (styles) {
         for (const key in styles) {
-          el.style[key] = styles[key]
+          el.style.setProperty(key, styles[key])
         }
       }
       if (attrs) {
