@@ -90,13 +90,12 @@ class Gvue {
       // * 获取要更新的vnode
       const el = vnode.el = oldVnode.el
       // * props
-      const oldStyles = oldVnode.props && oldVnode.props.styles
-      const styles = oldVnode.props && vnode.props.styles
-      for (let key in styles) {
-        if (styles[key] !== oldStyles[key]) {
-          el.style.setProperty(key, styles[key])
-        }
-      }
+      const { attrs: oldAttrs, on: oldOn, styles: oldStyles } = oldVnode.props
+      const { attrs, on, styles } = vnode.props
+      // 1: attrs, 2: on, 3: styles
+      this.updateProps(el, oldAttrs, attrs, 1)
+      this.updateProps(el, oldOn, on, 2)
+      this.updateProps(el, oldStyles, styles, 3)
       // * children
       const oldCh = oldVnode.children
       const newCh = vnode.children
@@ -123,6 +122,15 @@ class Gvue {
 
     // ! 保存vnode,更新使用
     this._vnode = vnode
+  }
+
+  updateProps(el, oldProps, props, type) {
+    for (let key in props) {
+      if (props[key] !== oldProps[key]) {
+        if (type === 1) el.setAttribute(key, props[key])
+        if (type === 3) el.style.setProperty(key, props[key])
+      }
+    }
   }
 
   updateChildren(parentEle, oldCh, newCh) {
