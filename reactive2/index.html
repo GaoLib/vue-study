@@ -22,6 +22,7 @@
         },
         txtColor: 'black',
         txtCLass: 'txt',
+        divEvent: 'onclick',
         array: [1,2,3,4,5]
       },
       render(h) {
@@ -42,7 +43,7 @@
               color:'red'
             },
             on: {
-              click: 'onclick'
+              click: this.divEvent
             }
           },
           [
@@ -63,8 +64,12 @@
         onclick: function() {
           this.txtColor = 'yellow'
           this.txtClass = 'txtUpdated'
+          this.divEvent = 'onclick1'
           this.$set(this.obj, 'bar', 'barrrrrrrr')
           this.$delete(this.array, this.array.length-1)
+        },
+        onclick1: function() {
+          console.log('here')
         }
       }
     })

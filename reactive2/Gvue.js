@@ -128,8 +128,15 @@ class Gvue {
     for (let key in props) {
       if (props[key] !== oldProps[key]) {
         if (type === 1) el.setAttribute(key, props[key])
+        if (type === 2) {
+          const fn = this.$options.methods[props[key]]
+          el.addEventListener(key, () => {
+            fn.call(this)
+          })
+        }
         if (type === 3) el.style.setProperty(key, props[key])
       }
+      
     }
   }
 
