@@ -121,3 +121,27 @@ reactive
 > 创建元素
 - createComponent()
 > 执行init钩子，得到组件实例
+
+## 自定义事件
+#### src\core\instance\lifecycle.js
+- vm._update()
+
+#### src\core\vdom\patch.js
+- patch()
+- createElm()
+- createComponent()
+
+#### src\core\instance\init.js
+- initEvents()
+
+#### src\core\instance\events.js
+- updateComponentListeners()
+- updateListeners()
+
+#### src\core\vdom\helpers\update-listeners.js
+- add()
+> 调用传入的add函数
+
+#### src\core\instance\events.js
+- target.$on(event, fn)
+> 子组件添加定义在父组件见的监听
