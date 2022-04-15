@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue3-init</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+
+    const createAppAPI = render => {
+      return function createApp (rootComponent) {
+        const app = {
+          // ! 由vnode获取dom
+          mount(container) {
+            const vnode = {
+              type: rootComponent
+            }
+
+            render(vnode, container)
+          }
+        }
+        return app
+      }
+    }
+
+    const createRenderer = ({ createElement, querySelector, insert }) => {
+      const render = (vnode, container) => {
+        // 获取根组件subtree
+        const rootComponent = vnode.type
+        const subtree = rootComponent.render.call(rootComponent.data())
+        const child = createElement(subtree.type)
+        if (typeof subtree.children === 'string') {
+          child.textContent = subtree.children
+        } else {}
+        const parent = querySelector(container)
+        insert(child, parent)
+      }
+      return {
+        render,
+        createApp: createAppAPI(render)
+      }
+    }
+
+    const renderer = createRenderer({
+      createElement(tag) {
+        return document.createElement(tag)
+      },
+      querySelector(sel) {
+        return document.querySelector(sel)
+      },
+      insert(child, parent) {
+        parent.appendChild(child)
+      }
+    })
+
+    const Vue = {
+      createApp(rootComp) {
+        return renderer.createApp(rootComp)
+      }
+    }
+
+    Vue.createApp({
+      data() {
+        return {
+          text: 'hello',
+        }
+      },
+      render() {
+        return {
+          type: 'h2',
+          children: this.text,
+        }
+      },
+    }).mount('#app')
+  </script>
+</body>
+</html>
