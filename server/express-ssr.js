@@ -7,7 +7,7 @@ const server = express()
 const { createRenderer } = require('vue-server-renderer')
 const renderer = createRenderer()
 
-server.get('/', (req, res) => {
+server.get('*', (req, res) => {
   const app = new Vue({
     template: '<div>{{ msg }}</div>',
     data() {
